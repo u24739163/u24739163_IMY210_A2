@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
       const response = await $fetch('https://api.mailersend.com/v1/email', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer mlsn.bbae8734c8b426741f6171183de531392cf8517533122c458152ea39a3b17d94`,
+          'Authorization': `Bearer ${useRuntimeConfig().mailersendKey}`,
           'Content-Type': 'application/json'
         },
         body: {
