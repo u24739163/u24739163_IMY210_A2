@@ -1,13 +1,14 @@
 // u24739163 Mulondi Makhado
 export default defineEventHandler(async (event) => {
   // Send an email to the user using the Mailersend API
+    const config = useRuntimeConfig()
     const body = await readBody(event)
     try {
       // Post request includes details of the email like the sender, recipient(which is received from the form) and text of the email 
       const response = await $fetch('https://api.mailersend.com/v1/email', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${useRuntimeConfig().mailersendKey}`,
+          'Authorization': `Bearer ${config.mailersendKey}`,
           'Content-Type': 'application/json'
         },
         body: {

@@ -1,8 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   runtimeConfig: {
-    githubToken: process.env.GITHUB_TOKEN,
-    mailersendKey: process.env.MAILERSEND_API_KEY
+    mailersendKey: process.env.MAILERSEND_API_KEY,
+    public: {
+      githubToken: process.env.GITHUB_TOKEN
+    }
   },
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
