@@ -2,7 +2,6 @@
 <template>
     <main class="container py-5">
       <div class="row">
-        <!-- Left Column (Contact Info) -->
         <div class="col-lg-6">
           <h1 class="display-4 mb-4">Get In Touch</h1>
           <p class="lead mb-5">
@@ -25,16 +24,27 @@
             </ul>
           </div>
         </div>
-        
-        <!-- Right Column (Contact Form) -->
         <div class="col-lg-6">
           <div class="card shadow">
             <div class="card-body p-5">
               <h3 class="mb-4">Send Me a Message</h3>
-              <form @submit.prevent="submitForm">
+              <form 
+                name="contact" 
+                method="POST" 
+                data-netlify="true"
+                @submit.prevent="submitForm"
+              >
+                <input type="hidden" name="form-name" value="contact">
                 <div class="mb-3">
-                  <label for="name" class="form-label">Name</label>
-                  <input v-model="form.name" type="text" class="form-control" id="name" required>
+                <label for="name" class="form-label">Name</label>
+                <input 
+                  v-model="form.name" 
+                  type="text" 
+                  class="form-control" 
+                  id="name" 
+                  name="name"
+                  required
+                >
                 </div>
                 <div class="mb-3">
                   <label for="email" class="form-label">Email</label>
@@ -43,12 +53,20 @@
                     type="email" 
                     class="form-control" 
                     id="email" 
+                    name="email"
                     required
                   >
                 </div>
                 <div class="mb-3">
                   <label for="message" class="form-label">Message</label>
-                  <textarea v-model="form.message" class="form-control" id="message" rows="5" required></textarea>
+                  <textarea 
+                    v-model="form.message" 
+                    class="form-control" 
+                    id="message" 
+                    rows="5" 
+                    name="message"
+                    required
+                  ></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
                   <span v-if="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
@@ -70,41 +88,53 @@ const form = reactive({
   name: '',
   email: '',
   message: ''
-})
+});
 
-const isSubmitting = ref(false)
-const submitStatus = ref(null)
+const isSubmitting = ref(false);
+const submitStatus = ref(null);
 
 const submitForm = async () => {
-  isSubmitting.value = true
-  submitStatus.value = null
+  isSubmitting.value = true;
+  submitStatus.value = null;
 
-  // Sends the form info to the send-emails API which is used to send the info to the Mailersend API
   try {
+    // Submits the to Netlify Forms
+    const netlifyFormData = new FormData();
+    netlifyFormData.append('form-name', 'contact');
+    netlifyFormData.append('name', form.name);
+    netlifyFormData.append('email', form.email);
+    netlifyFormData.append('message', form.message);
+    
+    await fetch('/', {
+      method: 'POST',
+      body: netlifyFormData,
+    });
+
+    // Submits the form to the MailerSend API
     const { data } = await $fetch('/api/send-email', {
       method: 'POST',
       body: form
-    })
+    });
 
     submitStatus.value = {
       type: 'alert-success',
       message: 'Thank you! Your message has been sent. You should receive a confirmation email shortly.'
-    }
+    };
 
     // Resets the form
-    form.name = ''
-    form.email = ''
-    form.message = ''
+    form.name = '';
+    form.email = '';
+    form.message = '';
+    
   } catch (error) {
     submitStatus.value = {
       type: 'alert-danger',
       message: error.data?.message || 'Failed to send message. Please try again later.'
-    }
+    };
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
-
+};
 </script>
   
 <style scoped>
